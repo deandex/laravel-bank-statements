@@ -55,11 +55,11 @@ class Statement extends Provider
      * @return void
      */
     public function __construct(
-        ConnectionResolverInterface $resolver, 
-        $database, 
-        $table, 
-        Account $account, 
-        Array $collectors, 
+        ConnectionResolverInterface $resolver,
+        $database,
+        $table,
+        Account $account,
+        Array $collectors,
         $tempStoragePath
     )
     {
@@ -86,12 +86,12 @@ class Statement extends Provider
     public function search(Array $params = [], $page = 1, $limit = 10)
     {
         $params = array_merge([
-            'bank_account_id' => 0, 
-            'from_date'       => '', 
-            'end_date'        => '', 
-            'type'            => '', 
-            'amount'          => 0, 
-            'order_by'        => 'created_at', 
+            'bank_account_id' => 0,
+            'from_date'       => '',
+            'end_date'        => '',
+            'type'            => '',
+            'amount'          => 0,
+            'order_by'        => 'created_at',
             'order'           => 'DESC'
         ], $params);
 
@@ -218,7 +218,7 @@ class Statement extends Provider
     public function findBy(Array $params)
     {
         $params = array_merge([
-            'unique_id' => '', 
+            'unique_id' => '',
             'amount'    => 0
         ], $params);
 
@@ -242,8 +242,31 @@ class Statement extends Provider
     }
 
     /**
+     * Delete data by params.
+     *
+     * @author Noviandra Syahputra <andrazone@gmail.com>
+     *
+     * @param  array  $params
+     * @return array
+     */
+    public function deleteBy(Array $params)
+    {
+        $params = array_merge([
+            'bank_account_id' => ''
+        ], $params);
+
+        $table = $this->getTable();
+
+        if ( ! empty($params['bank_account_id'])) {
+            $table->where($this->table.'.bank_account_id', '=', $params['bank_account_id']);
+        }
+
+        return $table->delete() > 0;
+    }
+
+    /**
      * Collect statements.
-     * 
+     *
      * @param  \Carbon\Carbon  $startDate
      * @param  \Carbon\Carbon  $endDate
      * @param  array           $params
@@ -321,7 +344,7 @@ class Statement extends Provider
 
     /**
      * Continue collect statements.
-     * 
+     *
      * @param  \Carbon\Carbon  $startDate
      * @param  \Carbon\Carbon  $endDate
      * @param  array           $params
@@ -427,7 +450,7 @@ class Statement extends Provider
 
     /**
      * Save items.
-     * 
+     *
      * @param  \Illuminate\Support\Collection  $items
      * @return void
      */
@@ -435,7 +458,7 @@ class Statement extends Provider
     {
         foreach ($items as $item) {
             $doUpdate = false;
-            
+
             try {
                 $existingItem = $this->findBy([
                     'unique_id' => $item->uniqueId
@@ -446,12 +469,12 @@ class Statement extends Provider
                 }
             } catch (RecordNotFoundException $e) {
                 $this->create([
-                    'bank_account_id'  => $item->accountId, 
-                    'unique_id'        => $item->uniqueId, 
-                    'transaction_date' => $item->date, 
-                    'description'      => $item->description, 
-                    'type'             => $item->type, 
-                    'amount'           => $item->amount, 
+                    'bank_account_id'  => $item->accountId,
+                    'unique_id'        => $item->uniqueId,
+                    'transaction_date' => $item->date,
+                    'description'      => $item->description,
+                    'type'             => $item->type,
+                    'amount'           => $item->amount,
                     'created_at'       => new Carbon()
                 ]);
             }
@@ -466,7 +489,7 @@ class Statement extends Provider
 
     /**
      * Save current state.
-     * 
+     *
      * @param  int  $accountId
      */
     private function saveState($accountId)
@@ -477,7 +500,7 @@ class Statement extends Provider
 
     /**
      * Get current state.
-     * 
+     *
      * @return int  $accountId
      */
     private function getState()
@@ -488,7 +511,7 @@ class Statement extends Provider
 
     /**
      * Remove current state.
-     * 
+     *
      * @return void
      */
     private function removeState()
